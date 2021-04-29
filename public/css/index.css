@@ -113,17 +113,6 @@ body {
     background: #e1e3e2;
 }
 
-/* .chat-form button {
-    background: #442814;
-    color: white;
-    padding: 1px 10px;
-    font-size: 30px;
-    border: none;
-    margin: 0 10px;
-    border-radius: 3px;
-    cursor: pointer;
-} */
-
 .submit{
     width: 35px;
     height: 35px;
@@ -131,6 +120,7 @@ body {
     object-fit: contain;
     background-color: white;
     margin: 0 10px;
+    outline: none;
     box-shadow: 0.1px 0.1px 0.1px 0.1px rgb(66, 66, 66);
 }
 
@@ -189,6 +179,7 @@ body {
     background-color: #ddd;
     margin-left: 44%;
     margin-top: 80%;
+    outline: none;
     box-shadow: 0.1px 0.1px 0.1px 0.1px rgb(66, 66, 66);
 }
 
