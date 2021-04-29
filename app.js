@@ -209,11 +209,6 @@ app.post('/deletetask', (req, res) => {
     });
 });
 
-const port = 8000 || process.env.PORT;
-const server = app.listen(port, () => {
-    console.log(`App running at port ${port}`);
-});
-
 //Get Keyword
 app.post('/getkeyword', (req,res) =>  {
     let sql = '(SELECT * FROM keyword)';
@@ -234,3 +229,7 @@ function buatTanggal(hari, bulan, tahun){
 
     return tahun + '-' + bulan + '-'+ hari;
 }
+
+app.listen(process.env.PORT || 3000, function(){
+    console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
+  });
