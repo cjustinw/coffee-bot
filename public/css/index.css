@@ -17,8 +17,7 @@ body {
 
 .chat-container {
     display: none;
-    width: 25%;
-    min-width: 350px;
+    width: 350px;
     height: 100%;
     background: #fff;
     margin: 0% 10%;
@@ -26,14 +25,14 @@ body {
 }
 
 .chat-box {
-    width: 100%;
+    width: 350px;
     height: 100%;
     background: #fff;
     padding: 25px;
 }
 
 .chat-header {
-    width: 100%;
+    width: 350px;
     height: 50px;
     background-color: #776050;
     color: white;
@@ -42,7 +41,7 @@ body {
 
 .chatlogs {
     padding: 4px;
-    width: 100%;
+    width: 350px;
     height: 350px;
     overflow-x: hidden;
     overflow-y: scroll;
