@@ -8,13 +8,12 @@ const chatbtn = document.querySelector('#chat-logo');
 
 window.addEventListener('DOMContentLoaded', (event) => {
     processOutput("help");
+    kataTugas();
 });
 
 chatbtn.addEventListener('click', () => {
     popup.classList.toggle('show');
 })
-
-
 
 // Regex untuk data task yang ada
 const regexTanggal = /(((0[1-9]|[12][0-9]|3[01])|[1-9])\s(januari|februari|maret|april|mei|juni|juli|agustus|september|oktober|november|desember)\s\d{4})|((0[1-9]|[12][0-9]|3[01])[\/\-](0[1-9]|1[012])[\/\-]\d{4})/i;
@@ -268,7 +267,7 @@ async function processAddTask(input){
     } catch (err) {
         console.log(err);
     }
-    return output;
+    printOutputText(output);
 }
 
 //Fungsi Fitur 2
@@ -351,7 +350,7 @@ async function printSeeTask(str){
     } catch (err) {
         console.log(err);
     }
-    return output;
+    printOutputText(output);
 }
 
 //Fungsi Fitur 3
@@ -381,7 +380,7 @@ async function processSearchDeadline(input) {
     } catch (err) {
         console.log(err);
     }
-    return output;
+    printOutputText(output);
 }
 
 //Fungsi Fitur 4
@@ -407,8 +406,9 @@ async function printUpdateMessage(str){
     } catch (err) {
         console.log(err);
     }
-    return output;
+    printOutputText(output);
 }
+
 async function processUpdateTask(id, tanggal){
     var cond; // kondisi delete berhasil atau tidak
     try{
@@ -444,8 +444,9 @@ async function printDeleteMessage(str){
     } catch(err) {
         console.log(err);
     }
-    return output;
+    printOutputText(output);
 }
+
 async function processDeleteTask(id){
     var cond; // kondisi delete berhasil atau tidak
     try{
@@ -482,7 +483,7 @@ function help(){
 
 //Fungsi Fitur 7
 //Definisi dan List Task
-async function kataTugas(str){
+async function kataTugas(){
     try{
         listTugas = [];
         await $.post('/getkeyword', {}, function(data){
@@ -501,42 +502,27 @@ async function kataTugas(str){
 //Menampilkan Pesan Error
 //Fungsi menampilkan output dari semua fitur yang ada
 function processOutput(input) {
-    // console.log(containTugas(input));
-    kataTugas(input).then( () => {
-        var output;
-        if(isCommandToAddTask(input)){
-            processAddTask(input).then(output => {
-                printOutputText(output);
-            });
-        }
-        else if (isCommandToSeeTask(input)){
-            printSeeTask(input).then(output => {
-                printOutputText(output);
-            });
-        }
-        else if (isCommandToSearchDeadline(input)){
-            processSearchDeadline(input).then(output => {
-                printOutputText(output);
-            });
-        }
-        else if (isCommandToUpdateTask(input)){
-            printUpdateMessage(input).then(output => {
-                printOutputText(output);
-            });
-        }
-        else if (isCommandToDeleteTask(input)){
-            printDeleteMessage(input).then(output => {
-                printOutputText(output);
-            });
-            
-        }
-        else if (isCommandToHelp(input)){
-            printOutputText(help());
-        }
-        else{
-            printOutputText("Pesan tidak dikenali!");
-        }
-    })
+    if(isCommandToAddTask(input)){
+        processAddTask(input);
+    }
+    else if (isCommandToSeeTask(input)){
+        printSeeTask(input);
+    }
+    else if (isCommandToSearchDeadline(input)){
+        processSearchDeadline(input);
+    }
+    else if (isCommandToUpdateTask(input)){
+        printUpdateMessage(input);
+    }
+    else if (isCommandToDeleteTask(input)){
+        printDeleteMessage(input);
+    }
+    else if (isCommandToHelp(input)){
+        printOutputText(help());
+    }
+    else{
+        printOutputText("Pesan tidak dikenali!");
+    }
 }
 
 function printOutputText(output) {
@@ -569,5 +555,11 @@ submitBtn.addEventListener('click', ()=> {
 
         /* **** Output **** */
         processOutput(input);
+
+        $(document).ready(function() {
+            $('html, .chatlogs').animate({
+                scrollTop:10000000000
+            }, 500);
+        });
     }
 });

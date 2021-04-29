@@ -1,21 +1,37 @@
 const express = require('express');
 const mysql = require('mysql');
-const bodyParser = require('body-parser');
 
-//Create connection
-const db = mysql.createConnection({
-    host     : 'localhost',
-    user     : 'root',
-    password : '',
-    database : 'chatbot'
-});
+// Create connection
+const db_config = {
+    host     : 'us-cdbr-east-03.cleardb.com',
+    user     : 'bc53dac014cb20',
+    password : '73ace8d8',
+    database : 'heroku_1128e12ec2383cd'
+};
 
-db.connect((err) => {
-    if(err) {
-        throw err;
-    }
-    console.log('Database connected ...');
-})
+var db;
+
+function handleDisconnection() {
+    // var connection = mysql.createConnection(mysql_config);
+    db = mysql.createConnection(db_config);
+    db.connect(function(err) {
+        if(err) {
+            console.log('error when connecting to db:', err);
+            setTimeout('handleDisconnection()', 2000);
+        }
+        console.log('Database connected ...');
+    });
+ 
+     db.on('error', function(err) {
+        console.log('db error', err);
+        if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+            handleDisconnection();
+        } else {
+            throw err;
+        }
+    });
+}
+handleDisconnection();
 
 const app = express();
 
@@ -27,43 +43,43 @@ app.get('/', (req, res) => {
     res.render('pages/index');
 });
 
-// Create DB
-app.get('/createdb', (req, res) => {
-    let sql = `DROP DATABASE IF EXISTS chatbot;`;
-    db.query(sql, (err, result) => {
-        if(err) throw err;
-    });
-    sql = `CREATE DATABASE chatbot;`;
-    db.query(sql, (err, result) => {
-        if(err) throw err;
-        res.send("Database created ...");
-    });
-});
+// // Create DB
+// app.get('/createdb', (req, res) => {
+//     let sql = `DROP DATABASE IF EXISTS chatbot;`;
+//     db.query(sql, (err, result) => {
+//         if(err) throw err;
+//     });
+//     sql = `CREATE DATABASE chatbot;`;
+//     db.query(sql, (err, result) => {
+//         if(err) throw err;
+//         res.send("Database created ...");
+//     });
+// });
 
-// Create table
-app.get('/createtable', (req, res) => {
-    let sql = 'DROP TABLE IF EXISTS task;';
-    db.query(sql, (err, result) => {
-        if(err) throw err;
-    });
-    sql = 'CREATE TABLE task (id INTEGER AUTO_INCREMENT PRIMARY KEY, tanggal DATE, matkul VARCHAR(255), tugas VARCHAR(255), topik VARCHAR(255));';
-    db.query(sql, (err, result) => {
-        if(err) throw err;
-    });
-    sql = "DROP TABLE IF EXISTS keyword;"
-    db.query(sql, (err, result) => {
-        if(err) throw err;
-    });
-    sql = 'CREATE TABLE keyword (id INTEGER AUTO_INCREMENT PRIMARY KEY, kata VARCHAR(255) UNIQUE NOT NULL);';
-    db.query(sql, (err, result) => {
-        if(err) throw err;
-    });
-    sql = 'INSERT INTO keyword (kata) VALUES ("tubes"), ("tucil"), ("ujian"), ("kuis"), ("praktikum");';
-    db.query(sql, (err, result) => {
-        if(err) throw err;
-        res.send("Table created ...");
-    });
-});
+// // Create table
+// app.get('/createtable', (req, res) => {
+//     let sql = 'DROP TABLE IF EXISTS task;';
+//     db.query(sql, (err, result) => {
+//         if(err) throw err;
+//     });
+//     sql = 'CREATE TABLE task (id INTEGER AUTO_INCREMENT PRIMARY KEY, tanggal DATE, matkul VARCHAR(255), tugas VARCHAR(255), topik VARCHAR(255));';
+//     db.query(sql, (err, result) => {
+//         if(err) throw err;
+//     });
+//     sql = "DROP TABLE IF EXISTS keyword;"
+//     db.query(sql, (err, result) => {
+//         if(err) throw err;
+//     });
+//     sql = 'CREATE TABLE keyword (id INTEGER AUTO_INCREMENT PRIMARY KEY, kata VARCHAR(255) UNIQUE NOT NULL);';
+//     db.query(sql, (err, result) => {
+//         if(err) throw err;
+//     });
+//     sql = 'INSERT INTO keyword (kata) VALUES ("tubes"), ("tucil"), ("ujian"), ("kuis"), ("praktikum");';
+//     db.query(sql, (err, result) => {
+//         if(err) throw err;
+//         res.send("Table created ...");
+//     });
+// });
 
 // Insert task
 app.post('/insert', (req, res) => {
@@ -193,7 +209,7 @@ app.post('/deletetask', (req, res) => {
     });
 });
 
-const port = 8000 || process.env.PORT;
+const port = process.env.PORT || 8000;
 const server = app.listen(port, () => {
     console.log(`App running at port ${port}`);
 });
@@ -217,5 +233,4 @@ function buatTanggal(hari, bulan, tahun){
     } 
 
     return tahun + '-' + bulan + '-'+ hari;
-
 }
