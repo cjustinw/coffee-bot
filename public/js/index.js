@@ -5,6 +5,7 @@ const chatlogs = document.querySelector('.chatlogs');
 const textInput = document.querySelector('textarea');
 const popup = document.querySelector('.chat-container');
 const chatbtn = document.querySelector('#chat-logo');
+const aboutbtn = document.querySelector('#about-us-logo');
 
 window.addEventListener('DOMContentLoaded', (event) => {
     processOutput("help");
@@ -14,6 +15,37 @@ window.addEventListener('DOMContentLoaded', (event) => {
 chatbtn.addEventListener('click', () => {
     popup.classList.toggle('show');
 })
+
+aboutbtn.addEventListener('click', () => {
+    $(document).ready(function() {
+        $('html').animate({
+            scrollTop:1000
+        }, 1000);
+    });
+})
+
+submitBtn.addEventListener('click', ()=> {
+    var input = textInput.value;
+
+    if(input != ''){
+        var showInput = `
+            <div class="chat user">
+                <p class="chat-message">${input}</p>
+            </div>
+        `;
+        chatlogs.insertAdjacentHTML("beforeend", showInput);
+        textInput.value = '';
+
+        /* **** Output **** */
+        processOutput(input);
+
+        $(document).ready(function() {
+            $('.chatlogs').animate({
+                scrollTop:10000000000
+            }, 500);
+        });
+    }
+});
 
 // Regex untuk data task yang ada
 const regexTanggal = /(((0[1-9]|[12][0-9]|3[01])|[1-9])\s(januari|februari|maret|april|mei|juni|juli|agustus|september|oktober|november|desember)\s\d{4})|((0[1-9]|[12][0-9]|3[01])[\/\-](0[1-9]|1[012])[\/\-]\d{4})/i;
@@ -575,31 +607,8 @@ function printOutputText(output) {
         chatlogs.insertAdjacentHTML("beforeend", showOutput);
     }
     $(document).ready(function() {
-        $('html, .chatlogs').animate({
+        $('.chatlogs').animate({
             scrollTop:10000000000
         }, 500);
     });
 }
-
-submitBtn.addEventListener('click', ()=> {
-    var input = textInput.value;
-
-    if(input != ''){
-        var showInput = `
-            <div class="chat user">
-                <p class="chat-message">${input}</p>
-            </div>
-        `;
-        chatlogs.insertAdjacentHTML("beforeend", showInput);
-        textInput.value = '';
-
-        /* **** Output **** */
-        processOutput(input);
-
-        $(document).ready(function() {
-            $('html, .chatlogs').animate({
-                scrollTop:10000000000
-            }, 500);
-        });
-    }
-});

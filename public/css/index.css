@@ -11,7 +11,7 @@ html {
 
 body {
     background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/image/background.jpg');
-    background-size:cover;
+    background-size:contain;
 }
 
 
@@ -120,7 +120,6 @@ body {
     background-color: white;
     margin: 0 10px;
     outline: none;
-    box-shadow: 0.1px 0.1px 0.1px 0.1px rgb(66, 66, 66);
 }
 
 .submit:active {
@@ -169,6 +168,10 @@ body {
     margin: 2% 5%;
 }
 
+.btn-logo {
+    display: flex;
+}
+
 #chat-logo {
     position: relative;
     width: 50px;
@@ -176,13 +179,28 @@ body {
     border-radius: 50%;
     object-fit: contain;
     background-color: #ddd;
-    margin-left: 44%;
+    margin-left: 34%;
     margin-top: 80%;
     outline: none;
-    box-shadow: 0.1px 0.1px 0.1px 0.1px rgb(66, 66, 66);
+}
+
+#about-us-logo {
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: contain;
+    background-color: #ddd;
+    margin-left: 4%;
+    margin-top: 80%;
+    outline: none;
 }
 
 #chat-logo:active {
+    transform: translateY(4px);
+}
+
+#about-us-logo:active {
     transform: translateY(4px);
 }
 
@@ -194,4 +212,36 @@ body {
     margin: 3% 1%;
     font-size: 20px;
     font-weight: 300;
+}
+
+.about-us h1{
+    margin: 33% auto 10%;
+    color:#d3cac3; 
+    font-weight: 800; 
+    font-size: 30px;
+}
+
+.profile{
+    background-color: rgb(32, 32, 32);
+    margin-bottom: 10%;
+    border-radius: 5px;
+    padding: 5%;
+    text-align: center;
+}
+
+.person{
+    margin: auto;
+}
+
+#name {
+    color:#d3cac3; 
+    font-weight: 600; 
+    font-size: 20px;
+    margin: 5% auto 0% auto; 
+}
+
+#nim{
+    color:#d3cac3; 
+    font-weight: 600; 
+    font-size: 16px;
 }
