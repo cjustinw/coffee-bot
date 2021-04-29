@@ -5,10 +5,13 @@
     box-sizing: border-box;
 }
 
+html {
+    min-width: 460px;
+}
+
 body {
     background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/image/background.jpg');
     background-size:cover;
-    min-width: 460px;
 }
 
 
