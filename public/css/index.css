@@ -76,14 +76,14 @@ body {
 }
 
 .user .chat-message {
-    background: #b49270;
-    color: white;
+    background: #c09f7f;
+    color: black;
     margin-left: auto;
 }
 
 .bot .chat-message {
-    background: #3a3022;
-    color: white;
+    background: #d4c4b6;
+    color: black;
 }
 
 .chat-form {

@@ -157,6 +157,10 @@ function isCommandToHelp(str){
     return kmpMatch(str.toLowerCase(),"help") || kmpMatch(str.toLowerCase(),"bantuan") || kmpMatch(str.toLowerCase(),"detail");
 }
 
+function isCommandToClearAllTask(str){
+    return kmpMatch(str.toLowerCase(),"clear");
+}
+
 //Fungsi Tambahan
 async function taskExistInDatabase(id){
     var temp;
@@ -465,19 +469,33 @@ async function processDeleteTask(id){
 //Menampilkan Opsi Help
 function help(){
     output = "<b>[COFFEE BOT]</b><br> <br>";
-    output += "Command-Command:<br>"
-    output += "1. Menambahkan Deadline<br>";
-    output += "   Kata Kunci : Tanggal (xx-xx-xxxx atau x bulan yyyy), Kode Mata Kuliah (YYXXXX), Jenis Tugas, Topik (diawali dengan kata topik)<br>";
-    output += "<br>2. Melihat Daftar Task<br>";
-    output += "   Kata Kunci : Deadline,Tampilkan, (range waktu atau semua atau jenis tugas) <br>";
-    output += "<br>3. Menampilkan Deadline Tugas<br>";
-    output += "   Kata Kunci : Deadline, Jenis Tugas, Kode Mata Kuliah<br>";
-    output += "<br>4. Memperbaharui Task<br>";
-    output += "   Kata Kunci : Diundur, ID Task (x), Tanggal<br>";
-    output += "<br>5. Menandai Task Sudah Dikerjakan<br>";
-    output += "   Kata Kunci : Kelar, ID Task <br>";
-    output += "<br>6. Menampilkan Command<br>";
-    output += "   Kata Kunci : help / bantuan / detail<br>";
+    output += "<b>Penjelasan Kata Kunci : </b><br>";
+    output += "<b>1. Tanggal</b> (dd-mm-yyyy, x bulan yyyy, dd/mm/yyyy) <br> contoh : 28 april 2021 <br>";
+    output += "<b>2. Kode Matkul</b> (YYXXXX) <br> contoh : IF2211 <br>";
+    output += "<b>3. Jenis Tugas</b> (tubes, tucil, praktikum, ujian, kuis) <br>";
+    output += "<b>4. Topik</b> (diawali dengan kata topik) <br>";
+    output += "<b>5. Range waktu</b> (n hari ke depan, n minggu ke depan, hari ini, besok)<br>";
+    output += "*Kata kunci tidak dipengaruhi huruf kapital<br><br>";
+    output += "<b>Command-Command : </b><br>"
+    output += "<br><b>--Menambahkan Deadline </b><br>";
+    output += "   <b>kata kunci :</b> tanggal, kode matkul, jenis tugas, \"topik\" <br>";
+    output += "   <b>contoh :</b> bot, tolong tambahkan deadline <b>Tubes</b> <b>IF2211</b> tanggal <b>28 april 2021</b> dengan <b>topik String Matching</b><br>";
+    output += "<br><b>--Melihat Daftar Task</b><br>";
+    output += "   <b>kata kunci :</b> \"tampilkan\" atau \"lihat\", \"deadline\", range waktu atau \"semua\" atau jenis tugas <br>";
+    output += "   <b>contoh :</b> bot, <b>lihat semua deadline</b><br>";
+    output += "<br><b>--Menampilkan Deadline Tugas</b><br>";
+    output += "   <b>kata kunci :</b> \"deadline\" atau \"waktu kumpul\", jenis tugas, kode matkul<br>";
+    output += "   <b>contoh :</b> bot, <b>deadline tubes IF2211</b> kapan?<br>";
+    output += "<br><b>--Memperbaharui Task</b><br>";
+    output += "   <b>kata kunci :</b> \"task\", ID Task, \"diundur\", tanggal<br>";
+    output += "   <b>contoh :</b> bot, <b>task 1 diundur </b> jadi <b>29 april 2021</b><br>";
+    output += "<br><b>--Menandai Task Sudah Dikerjakan</b><br>";
+    output += "   <b>kata kunci :</b> \"task\", ID Task, \"kelar\" atau \"hapus\", <br>";
+    output += "   <b>contoh :</b> bot, <b>task 1 kelar</b> <br>";
+    output += "<br><b>--Menampilkan Command</b><br>";
+    output += "   <b>kata kunci :</b> \"help\" atau \"bantuan\" atau \"detail\"<br>";
+    output += "<br><b>--Menghapus Seluruh Database</b><br>";
+    output += "   <b>kata kunci :</b> \"clear\"<br>";
     return output;
 }
 
@@ -497,6 +515,25 @@ async function kataTugas(){
         console.log(err);
     }
 }
+
+//Clear
+async function processClearAllTask(){
+    var output;
+    try{
+        await $.post('/clear', {}, function(data){
+            if(data == true){
+                output = "<b>[Semua Task Telah Dihapus]</b><br>"
+            }             
+            else{
+                output = "<b>[Gagal Untuk Menghapus Semua Task]</b><br>"
+            }
+        })
+    } catch (err) {
+        console.log(err);
+    }
+    printOutputText(output);
+}
+
 
 //Fungsi Fitur 8
 //Menampilkan Pesan Error
@@ -519,6 +556,9 @@ function processOutput(input) {
     }
     else if (isCommandToHelp(input)){
         printOutputText(help());
+    }
+    else if (isCommandToClearAllTask(input)){
+        processClearAllTask();
     }
     else{
         printOutputText("Pesan tidak dikenali!");

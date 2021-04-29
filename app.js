@@ -43,50 +43,11 @@ app.get('/', (req, res) => {
     res.render('pages/index');
 });
 
-// // Create DB
-// app.get('/createdb', (req, res) => {
-//     let sql = `DROP DATABASE IF EXISTS chatbot;`;
-//     db.query(sql, (err, result) => {
-//         if(err) throw err;
-//     });
-//     sql = `CREATE DATABASE chatbot;`;
-//     db.query(sql, (err, result) => {
-//         if(err) throw err;
-//         res.send("Database created ...");
-//     });
-// });
-
-// // Create table
-// app.get('/createtable', (req, res) => {
-//     let sql = 'DROP TABLE IF EXISTS task;';
-//     db.query(sql, (err, result) => {
-//         if(err) throw err;
-//     });
-//     sql = 'CREATE TABLE task (id INTEGER AUTO_INCREMENT PRIMARY KEY, tanggal DATE, matkul VARCHAR(255), tugas VARCHAR(255), topik VARCHAR(255));';
-//     db.query(sql, (err, result) => {
-//         if(err) throw err;
-//     });
-//     sql = "DROP TABLE IF EXISTS keyword;"
-//     db.query(sql, (err, result) => {
-//         if(err) throw err;
-//     });
-//     sql = 'CREATE TABLE keyword (id INTEGER AUTO_INCREMENT PRIMARY KEY, kata VARCHAR(255) UNIQUE NOT NULL);';
-//     db.query(sql, (err, result) => {
-//         if(err) throw err;
-//     });
-//     sql = 'INSERT INTO keyword (kata) VALUES ("tubes"), ("tucil"), ("ujian"), ("kuis"), ("praktikum");';
-//     db.query(sql, (err, result) => {
-//         if(err) throw err;
-//         res.send("Table created ...");
-//     });
-// });
-
 // Insert task
 app.post('/insert', (req, res) => {
     let sql = `SELECT id FROM task WHERE tanggal = "${req.body.tanggal}" and matkul = "${req.body.matkul}" and tugas = "${req.body.tugas}" and topik = "${req.body.topik}";`;
     db.query(sql, (err, result) => {
         if(err) throw err;
-        console.log(result);
         if(result.length != 0){
             res.send(false);
         }
@@ -126,7 +87,6 @@ app.post('/update', (req, res) => {
     var tanggalInsert = buatTanggal(tanggaltemp.getDate(),tanggaltemp.getMonth()+1,tanggaltemp.getFullYear());
     let sql = `UPDATE task SET tanggal = "${tanggalInsert}" WHERE id = ${req.body.id};`;
     db.query(sql, (err, result) => {
-        console.log(result);
         if(err) throw err;
         sql = `SELECT * FROM task WHERE id = ${req.body.id} and tanggal = "${req.body.tanggal}";`;
         db.query(sql, (err, result) => {
@@ -173,7 +133,6 @@ app.post('/deadline', (req, res) => {
     }
     db.query(sql, (err, result) => {
         if(err) throw err;
-        console.log(result);
         res.send(result);
     });
 });
@@ -194,7 +153,6 @@ app.post('/gettask', (req, res) => {
     }
     db.query(sql, (err, result) => {
         if(err) throw err;
-        console.log(result);
         res.send(result);
     });
 });
@@ -204,7 +162,6 @@ app.post('/deletetask', (req, res) => {
     let sql =  'DELETE FROM task WHERE id = 14;';
     db.query(sql, (err, result) => {
         if(err) throw err;
-        console.log(result);
         req.body.id = result;
     });
 });
@@ -214,10 +171,18 @@ app.post('/getkeyword', (req,res) =>  {
     let sql = '(SELECT * FROM keyword)';
     db.query(sql, (err, result) => {
         if(err) throw err;
-        console.log(result);
         res.send(result);
     });
 });
+
+//Clear
+app.post('/clear', (req, res) => {
+    let sql = 'DELETE FROM task';
+    db.query(sql, (err, result) => {
+        if(err) throw err;
+        res.send(true);
+    });
+})
 
 function buatTanggal(hari, bulan, tahun){
     if (parseInt(hari)<10){
