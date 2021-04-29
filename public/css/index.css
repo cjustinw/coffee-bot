@@ -9,6 +9,7 @@ body {
     
     background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('/image/background.jpg');
     background-size: 100%;
+    min-width: 460px;
 }
 
 .chat-container {
@@ -200,8 +201,4 @@ body {
     margin: 3% 1%;
     font-size: 20px;
     font-weight: 300;
-}
-
-.row {
-    min-width: 450px;
 }
