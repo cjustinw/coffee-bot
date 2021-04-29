@@ -209,7 +209,7 @@ app.post('/deletetask', (req, res) => {
     });
 });
 
-const port = process.env.PORT || 8000;
+const port = 8000 || process.env.PORT;
 const server = app.listen(port, () => {
     console.log(`App running at port ${port}`);
 });
