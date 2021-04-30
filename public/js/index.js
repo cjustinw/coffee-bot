@@ -282,17 +282,14 @@ async function processAddTask(input){
         tugas: formatTugas(regexTugas.exec(input)[0]),
         topik: formatTopik(input)
     }
-    var tanggaltemp = new Date(task.tanggal);
-    tanggaltemp.setDate(tanggaltemp.getDate()+1);
-    tanggaltemp = buatTanggal(tanggaltemp.getDate(),tanggaltemp.getMonth()+1,tanggaltemp.getFullYear());
     try{
         await $.post('/insert',  
-            {tanggal: tanggaltemp, matkul: task.matkul, tugas: task.tugas, topik: task.topik}, 
+            {tanggal: task.tanggal, matkul: task.matkul, tugas: task.tugas, topik: task.topik}, 
             function(id){
             task.id = id;
             if(task.id != null){
                 if(task.id == false){
-                    output = "<b>[Task Sudah Dicatat Sebelumnya]</b>"
+                    output = "Task sudah pernah dicatat sebelumnya :)"
                 }
                 else{
                     output = "<b>[Task Berhasil Dicatat]</b> <br> <br>";
@@ -323,7 +320,7 @@ async function printSeeTask(str){
         var regex3 = /besok/i;
         var regex4 = /minggu\sini/i;
         var d = new Date(); 
-        d.setDate(d.getDate()+1);
+        // d.setDate(d.getDate()+1);
         tanggal1 = buatTanggal(d.getDate(), d.getMonth()+1, d.getFullYear());
         if (regex1.test(str)){
             d.setDate(d.getDate() + 7*parseInt(regex1.exec(str)[0].slice(0,2)));
@@ -334,7 +331,8 @@ async function printSeeTask(str){
             tanggal2 = buatTanggal(d.getDate(), d.getMonth()+1, d.getFullYear());
         }
         else if (regex3.test(str)){
-            tanggal1 = buatTanggal(d.getDate()+1, d.getMonth()+1, d.getFullYear());
+            d.setDate(d.getDate() + 1);
+            tanggal1 = buatTanggal(d.getDate(), d.getMonth()+1, d.getFullYear());
         }
         else if (regex4.test(str)){
             d.setDate(d.getDate() + 7);
@@ -350,15 +348,10 @@ async function printSeeTask(str){
             str = str.replace(tanggal, "");
         }
         tanggal1 = formatTanggal(hasil[0]);
-        var tanggaltemp = new Date(tanggal1);
-        tanggaltemp.setDate(tanggaltemp.getDate()+1);
-        tanggal1 = buatTanggal(tanggaltemp.getDate(),tanggaltemp.getMonth()+1,tanggaltemp.getFullYear());
         if (hasil.length > 1){
             tanggal2 = formatTanggal(hasil[1]);
-            tanggaltemp = new Date(tanggal2);
-            tanggaltemp.setDate(tanggaltemp.getDate()+1);
-            tanggal2 = buatTanggal(tanggaltemp.getDate(),tanggaltemp.getMonth()+1,tanggaltemp.getFullYear());
         }
+        console.log(tanggal1);
     }
     
     var output;
@@ -373,13 +366,14 @@ async function printSeeTask(str){
             function(data){
                 var i;
                 if (data.length == 0){
-                    output = "<b>[Tidak Ada Deadline]</b> <br>";
+                    output = "Yeay, deadline tugas yang kamu cari tidak ada :)";
                 }
                 else{
                     output = "<b>[Daftar Deadline]</b> <br> <br>";
                     for (i = 0;  i<data.length; i++){
-                        // output += data[i];
-                        output += (i+1) + ". (ID : " + data[i].id + ") " + printTanggal(data[i].tanggal) + " - " + data[i].matkul + " - " + data[i].tugas + " - " + data[i].topik + "<br>"; 
+                        var date = new Date(data[i].tanggal);
+                        var dateOutput = buatTanggal(date.getDate(), date.getMonth() + 1, date.getFullYear())
+                        output += (i+1) + ". (ID : " + data[i].id + ") " + printTanggal(dateOutput) + " - " + data[i].matkul + " - " + data[i].tugas + " - " + data[i].topik + "<br>"; 
                     }    
                 }             
             })
@@ -403,11 +397,13 @@ async function processSearchDeadline(input) {
             function(data){
                 if(data != null) {
                     if(data.length == 0) {
-                        output = "<b>[Tidak Ada Deadline]</b>"
+                        output = "Yeay, deadline tugas yang kamu cari tidak ada :)"
                     }
                     else{
                         data.forEach(element => {
-                            output += printTanggal(element.tanggal) + " <br>";
+                            var date = new Date(element.tanggal);
+                            var dateOutput = buatTanggal(date.getDate(), date.getMonth() + 1, date.getFullYear())
+                            output += printTanggal(dateOutput) + " <br>";
                         });
                     }
                 }
@@ -430,14 +426,14 @@ async function printUpdateMessage(str){
         var existCond = await taskExistInDatabase(number);
         if (existCond == "true"){
             var updateCond = await processUpdateTask(number, tanggal)
-            if (updateCond == "false"){
+            if (updateCond == "true"){
                 tanggal = printTanggal(tanggal);
                 output = "<b>[Task Berhasil Diperbaharui]</b>" + "<br> <br>" + "Task " + number + " deadlinenya diupdate menjadi " + tanggal;
             } else {
-                output = "<b>[Task Gagal Dihapus]</b>" + "<br> <br>" + "Terjadi error pada update database";
+                output = "Maaf, task gagal dihapus :(" + "<br> <br>" + "Terjadi error pada update database";
             }
         } else {
-            output = "<b>[Task Gagal Diperbaharui]</b>" + "<br> <br>" + "Task " + number + " tidak ditemukan";
+            output = "Maaf, task gagal diperbaharui :(" + "<br> <br>" + "Task " + number + " tidak ditemukan";
         }
     } catch (err) {
         console.log(err);
@@ -452,6 +448,7 @@ async function processUpdateTask(id, tanggal){
             {id: id, tanggal: tanggal}, 
             function(condition){
                 cond = condition;
+                console.log(cond);
         })
     } catch (err) {
         console.log(err);
@@ -470,12 +467,12 @@ async function printDeleteMessage(str){
         if (existCond == "true"){
             var deleteCond = await processDeleteTask(number);
             if (deleteCond == "true"){
-                output = "<b>[Task Berhasil Dihapus]</b>" + "<br> <br>" + "Task " + number + " telah dihapus";
+                output = "<b>Task Berhasil Dihapus</b>" + "<br> <br>" + "Task " + number + " telah dihapus";
             } else {
-                output = "<b>[Task Gagal Dihapus]</b>" + "<br> <br>" + "Terjadi error pada delete database";
+                output = "Maaf, task gagal dihapus :(" + "<br> <br>" + "Terjadi error pada delete database";
             }
         } else {
-            output = "<b>[Task Gagal Dihapus]</b>" + "<br> <br>" + "Task " + number + " tidak ditemukan";
+            output = "Maaf, task gagal dihapus :(" + "<br> <br>" + "Task " + number + " tidak ditemukan";
         }
     } catch(err) {
         console.log(err);
@@ -506,8 +503,8 @@ function help(){
     output += "<b>2. Kode Matkul</b> (YYXXXX) <br> contoh : IF2211 <br>";
     output += "<b>3. Jenis Tugas</b> (tubes, tucil, praktikum, ujian, kuis) <br>";
     output += "<b>4. Topik</b> (diawali dengan kata topik) <br>";
-    output += "<b>5. Range waktu</b> (n hari ke depan, n minggu ke depan, hari ini, besok)<br>";
-    output += "*Kata kunci tidak dipengaruhi huruf kapital<br><br>";
+    output += "<b>5. Range waktu</b> (n hari ke depan, n minggu ke depan, hari ini, besok, tanggal, tanggal sampai tanggal) <br> contoh : deadline tanggal 1/04/2021 sampai 30/04/2021 <br>";
+    output += "<br>*Kata kunci tidak dipengaruhi huruf kapital<br><br>";
     output += "<b>Command-Command : </b><br>"
     output += "<br><b>--Menambahkan Deadline </b><br>";
     output += "   <b>kata kunci :</b> tanggal, kode matkul, jenis tugas, \"topik\" <br>";
@@ -554,10 +551,10 @@ async function processClearAllTask(){
     try{
         await $.post('/clear', {}, function(data){
             if(data == true){
-                output = "<b>[Semua Task Telah Dihapus]</b><br>"
+                output = "Yeay, semua task telah dihapus :)<br>"
             }             
             else{
-                output = "<b>[Gagal Untuk Menghapus Semua Task]</b><br>"
+                output = "Maaf, gagal untuk menghapus semua task :(<br>"
             }
         })
     } catch (err) {
@@ -593,7 +590,7 @@ function processOutput(input) {
         processClearAllTask();
     }
     else{
-        printOutputText("Pesan tidak dikenali!");
+        printOutputText("Maaf, pesan tidak dapat dikenali :(");
     }
 }
 

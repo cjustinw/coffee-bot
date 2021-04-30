@@ -82,10 +82,7 @@ app.post('/search', (req, res) => {
 
 // Update task by ID to tanggal
 app.post('/update', (req, res) => {
-    var tanggaltemp = new Date(req.body.tanggal);
-    tanggaltemp.setDate(tanggaltemp.getDate()+1);
-    var tanggalInsert = buatTanggal(tanggaltemp.getDate(),tanggaltemp.getMonth()+1,tanggaltemp.getFullYear());
-    let sql = `UPDATE task SET tanggal = "${tanggalInsert}" WHERE id = ${req.body.id};`;
+    let sql = `UPDATE task SET tanggal = "${req.body.tanggal}" WHERE id = ${req.body.id};`;
     db.query(sql, (err, result) => {
         if(err) throw err;
         sql = `SELECT * FROM task WHERE id = ${req.body.id} and tanggal = "${req.body.tanggal}";`;
@@ -121,7 +118,6 @@ app.post('/delete', (req, res) => {
 // Search deadline 
 app.post('/deadline', (req, res) => {
     let sql = `SELECT * FROM task WHERE matkul = "${req.body.matkul}" AND `;
-    console.log(req.body.tugas);
     if(req.body.tugas == "Tugas") {
         sql +=  `(tugas = "Tubes" OR tugas = "Tucil");`;
     }
@@ -139,30 +135,25 @@ app.post('/deadline', (req, res) => {
 
 // Get Task
 app.post('/gettask', (req, res) => {
-    let sql = '(SELECT * FROM task)';
-    if (req.body.tugas != null){
-        sql += ` INTERSECT (SELECT * FROM task WHERE tugas = "${req.body.tugas}")`;
+    let sql = 'SELECT * FROM task';
+    if (req.body.tugas != null && req.body.tanggal1 == null){
+        sql = `SELECT * FROM task WHERE tugas = "${req.body.tugas}"`;
     }
-    if (req.body.tanggal1 != null){
+    else if (req.body.tanggal1 != null){
         if (req.body.tanggal2 != null){
-            sql += ` INTERSECT (SELECT * FROM task WHERE tanggal BETWEEN "${req.body.tanggal1}" and "${req.body.tanggal2}")`;
+            sql = `SELECT * FROM task WHERE (tanggal BETWEEN "${req.body.tanggal1}" and "${req.body.tanggal2}")`;
         }
         else{
-            sql += ` INTERSECT (SELECT * FROM task WHERE tanggal = "${req.body.tanggal1}")`;
+            sql = `SELECT * FROM task WHERE (tanggal = "${req.body.tanggal1}")`;
+        }
+        if(req.body.tugas != null){
+            sql += ` AND tugas = "${req.body.tugas}"`;
         }
     }
+    sql += ";";
     db.query(sql, (err, result) => {
         if(err) throw err;
         res.send(result);
-    });
-});
-
-// Delete task
-app.post('/deletetask', (req, res) => {
-    let sql =  'DELETE FROM task WHERE id = 14;';
-    db.query(sql, (err, result) => {
-        if(err) throw err;
-        req.body.id = result;
     });
 });
 
@@ -183,17 +174,6 @@ app.post('/clear', (req, res) => {
         res.send(true);
     });
 })
-
-function buatTanggal(hari, bulan, tahun){
-    if (parseInt(hari)<10){
-        hari = "0" + hari.toString();
-    }
-    if (parseInt(bulan)<10){
-        bulan = "0" + bulan.toString();
-    } 
-
-    return tahun + '-' + bulan + '-'+ hari;
-}
 
 app.listen(process.env.PORT || 3000, function(){
     console.log("Express server listening on port %d in %s mode", this.address().port, app.settings.env);
