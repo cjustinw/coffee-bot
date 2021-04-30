@@ -6,6 +6,7 @@ const textInput = document.querySelector('textarea');
 const popup = document.querySelector('.chat-container');
 const chatbtn = document.querySelector('#chat-logo');
 const aboutbtn = document.querySelector('#about-us-logo');
+const scrollUpBtn = document.querySelector('#scroll-up');
 
 window.addEventListener('DOMContentLoaded', (event) => {
     processOutput("help");
@@ -21,6 +22,14 @@ aboutbtn.addEventListener('click', () => {
         $('html').animate({
             scrollTop:1000
         }, 1000);
+    });
+})
+
+scrollUpBtn.addEventListener('click', () => {
+    console.log("AA");
+    $(document).ready(function() {
+        $("html, body").animate({ scrollTop: 0 }, 1000);
+        return false;
     });
 })
 
